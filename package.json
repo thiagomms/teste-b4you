@@ -1,0 +1,22 @@
+{
+  "name": "sistema-produtos-b4you",
+  "version": "1.0.0",
+  "description": "Sistema de produtos para teste B4You",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "setup": "npm run setup-backend && npm run setup-frontend",
+    "setup-backend": "cd backend && npm install",
+    "setup-frontend": "cd frontend && npm install",
+    "migrate": "cd backend && npx sequelize-cli db:migrate",
+    "seed": "cd backend && npx sequelize-cli db:seed:all"
+  },
+  "keywords": ["node", "express", "react", "nextjs", "crud"],
+  "author": "B4You Test",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

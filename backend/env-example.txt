@@ -1,0 +1,13 @@
+# Configuração JWT
+JWT_SECRET=b4you_secret_key_2024
+
+# Configuração MySQL
+DB_DIALECT=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=crudb4you
+DB_USER=root
+DB_PASSWORD=sua_senha_mysql
+
+# Porta do servidor
+PORT=3001 
