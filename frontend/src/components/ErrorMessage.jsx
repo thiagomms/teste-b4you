@@ -1,27 +1,79 @@
 import { AlertCircle, X } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function ErrorMessage({ message, onClose }) {
-  if (!message) return null;
+  const [isVisible, setIsVisible] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const timeoutRef = useRef(null);
+  
+  useEffect(() => {
+    if (message) {
+      // Mostra a mensagem imediatamente
+      setShowMessage(true);
+      
+      // Pequeno delay para criar efeito de fade-in
+      const fadeTimer = setTimeout(() => {
+        setIsVisible(true);
+      }, 10);
+      
+      // Garante que a mensagem fique visível por pelo menos 3 segundos
+      // antes de permitir que seja fechada automaticamente
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      return () => {
+        clearTimeout(fadeTimer);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    } else {
+      // Fade out antes de remover
+      setIsVisible(false);
+      const hideTimer = setTimeout(() => {
+        setShowMessage(false);
+      }, 300);
+      
+      return () => clearTimeout(hideTimer);
+    }
+  }, [message]);
+  
+  if (!showMessage || !message) return null;
 
   return (
-    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+    <div className={`
+      bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6 shadow-sm
+      transform transition-all duration-500 ease-out
+      ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-2 scale-95'}
+    `}>
       <div className="flex items-start">
-        <AlertCircle className="h-5 w-5 text-red-400 mr-3 mt-0.5" />
-        <div className="flex-1">
-          <h3 className="text-sm font-medium text-red-800">
-            Erro
+        <div className="flex-shrink-0">
+          <AlertCircle className="h-5 w-5 text-red-500" />
+        </div>
+        <div className="ml-3 flex-1">
+          <h3 className="text-sm font-semibold text-red-800">
+            Erro de autenticação
           </h3>
-          <div className="text-sm text-red-700 mt-1">
-            {typeof message === 'string' ? message : message.error || 'Erro desconhecido'}
+          <div className="mt-1 text-sm text-red-700">
+            {typeof message === 'string' 
+              ? message 
+              : message.error || 'Credenciais inválidas'}
+          </div>
+          <div className="mt-2 text-xs text-red-600">
+            Verifique se o email e senha estão corretos conforme as credenciais de teste abaixo.
           </div>
         </div>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="ml-3 text-red-400 hover:text-red-600"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="ml-4 flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50 transition-colors"
+              aria-label="Fechar mensagem"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         )}
       </div>
     </div>

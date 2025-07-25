@@ -40,7 +40,7 @@ export default function Login() {
    * HANDLER DE MUDANÇA DE INPUT
    * 
    * Atualiza estado de forma imutável usando spread operator
-   * Limpa erros quando usuário começa a digitar (melhor UX)
+   * Mantém erro visível para melhor compreensão do usuário
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,10 +49,11 @@ export default function Login() {
       [name]: value // Atualiza campo específico
     }));
     
-    // Limpar erro quando o usuário começar a digitar
-    if (error) {
-      setError(null);
-    }
+    // Removida a limpeza automática do erro
+    // Agora o erro só some quando:
+    // 1. O usuário clica no X
+    // 2. Tenta fazer login novamente
+    // Isso dá mais tempo para ler a mensagem
   };
 
   /**
@@ -69,13 +70,19 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Previne reload da página
     setLoading(true);
-    setError(null);
+    setError(null); // Limpa erro anterior
 
     try {
       await authService.login(credentials);
       router.push('/'); // Redireciona para página principal
     } catch (error) {
+      console.log('Erro de login:', error); // Debug temporário
       setError(error); // Exibe erro ao usuário
+      
+      // Garante foco no campo de email para facilitar correção
+      setTimeout(() => {
+        document.getElementById('email')?.focus();
+      }, 100);
     } finally {
       setLoading(false); // Remove loading independente do resultado
     }
@@ -157,14 +164,23 @@ export default function Login() {
           </form>
 
           {/* Dica de login */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg shadow-sm">
+            <h4 className="text-sm font-semibold text-blue-900 mb-2 flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
               Credenciais de teste:
             </h4>
-            <p className="text-sm text-blue-600">
-              <strong>Email:</strong> admin@b4you.dev<br />
-              <strong>Senha:</strong> 123456
-            </p>
+            <div className="text-sm space-y-1">
+              <p className="text-blue-700">
+                <span className="font-medium">Email:</span> 
+                <code className="ml-2 px-2 py-1 bg-blue-100 rounded text-blue-900 font-mono text-xs">admin@b4you.dev</code>
+              </p>
+              <p className="text-blue-700">
+                <span className="font-medium">Senha:</span> 
+                <code className="ml-2 px-2 py-1 bg-blue-100 rounded text-blue-900 font-mono text-xs">123456</code>
+              </p>
+            </div>
           </div>
         </div>
       </div>

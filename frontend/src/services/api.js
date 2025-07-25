@@ -75,7 +75,7 @@ api.interceptors.request.use(
  * Trata erros globalmente, especialmente 401 (não autorizado).
  * 
  * Comportamento:
- * - 401: Remove token e redireciona para login
+ * - 401: Remove token e redireciona para login (exceto se já estiver no login)
  * - Outros erros: Propaga para tratamento específico
  */
 api.interceptors.response.use(
@@ -88,8 +88,12 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && isClient) {
       // Remove token inválido
       localStorage.removeItem('auth_token');
-      // Redireciona para página de login
-      window.location.href = '/login';
+      
+      // Só redireciona se NÃO estiver na página de login
+      // Isso evita refresh desnecessário que faz a mensagem desaparecer
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
     }
     // Propaga erro para tratamento específico
     return Promise.reject(error);
