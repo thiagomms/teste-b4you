@@ -1,3 +1,17 @@
+/**
+ * PÁGINA DE LOGIN
+ * 
+ * Implementa autenticação de usuários com JWT.
+ * Design responsivo e acessível seguindo boas práticas.
+ * 
+ * Funcionalidades:
+ * - Formulário controlado com React
+ * - Validação e feedback de erros
+ * - Loading state durante autenticação
+ * - Redirecionamento automático após sucesso
+ * - Limpeza de erros ao digitar
+ */
+
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { authService } from '../services/auth';
@@ -7,6 +21,14 @@ import Loading from '../components/Loading';
 
 export default function Login() {
   const router = useRouter();
+  
+  /**
+   * ESTADO DO FORMULÁRIO
+   * 
+   * credentials: Dados de login (email e senha)
+   * loading: Controla estado durante autenticação
+   * error: Armazena erros para exibição
+   */
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -14,11 +36,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  /**
+   * HANDLER DE MUDANÇA DE INPUT
+   * 
+   * Atualiza estado de forma imutável usando spread operator
+   * Limpa erros quando usuário começa a digitar (melhor UX)
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials(prev => ({
       ...prev,
-      [name]: value
+      [name]: value // Atualiza campo específico
     }));
     
     // Limpar erro quando o usuário começar a digitar
@@ -27,18 +55,29 @@ export default function Login() {
     }
   };
 
+  /**
+   * HANDLER DE SUBMISSÃO DO FORMULÁRIO
+   * 
+   * Processo:
+   * 1. Previne comportamento padrão (recarregar página)
+   * 2. Ativa loading e limpa erros
+   * 3. Tenta fazer login via serviço
+   * 4. Sucesso: redireciona para home
+   * 5. Erro: exibe mensagem
+   * 6. Finally: remove loading
+   */
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Previne reload da página
     setLoading(true);
     setError(null);
 
     try {
       await authService.login(credentials);
-      router.push('/');
+      router.push('/'); // Redireciona para página principal
     } catch (error) {
-      setError(error);
+      setError(error); // Exibe erro ao usuário
     } finally {
-      setLoading(false);
+      setLoading(false); // Remove loading independente do resultado
     }
   };
 

@@ -107,7 +107,7 @@ O sistema utiliza autenticação JWT. Para acessar as rotas protegidas:
 ### Credenciais de teste
 ```json
 {
-  "email": "admin@example.com",
+  "email": "admin@b4you.dev",
   "password": "123456"
 }
 ```

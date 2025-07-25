@@ -1,3 +1,21 @@
+/**
+ * PÁGINA PRINCIPAL - LISTA DE PRODUTOS
+ * 
+ * Esta é a página principal do sistema após o login.
+ * Implementa a listagem de produtos com funcionalidades CRUD completas.
+ * 
+ * Funcionalidades:
+ * - Listagem com busca em tempo real
+ * - Visualização, edição e exclusão de produtos
+ * - Feedback visual (loading, sucesso, erro)
+ * - Navegação para criar novo produto
+ * 
+ * Padrões utilizados:
+ * - Hooks do React (useState, useEffect)
+ * - Separação de concerns (serviços em arquivo separado)
+ * - Componentes reutilizáveis para UI
+ */
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { productsService } from '../services/products';
@@ -8,6 +26,17 @@ import SuccessMessage from '../components/SuccessMessage';
 
 export default function Products() {
   const router = useRouter();
+  
+  /**
+   * GERENCIAMENTO DE ESTADO
+   * 
+   * products: Array de produtos carregados da API
+   * loading: Estado de carregamento inicial
+   * error: Objeto de erro para exibir mensagens
+   * success: Mensagem de sucesso temporária
+   * searchTerm: Termo de busca para filtrar produtos
+   * deleteLoading: ID do produto sendo excluído (para feedback visual)
+   */
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,10 +44,24 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(null);
 
+  /**
+   * CARREGAMENTO INICIAL
+   * 
+   * useEffect com array vazio [] executa apenas na montagem do componente
+   * Garante que produtos sejam carregados quando a página é acessada
+   */
   useEffect(() => {
     loadProducts();
   }, []);
 
+  /**
+   * FUNÇÃO DE CARREGAMENTO DE PRODUTOS
+   * 
+   * Padrão try-catch-finally para:
+   * - try: Fazer a requisição e atualizar estado
+   * - catch: Capturar e exibir erros
+   * - finally: Sempre remover estado de loading
+   */
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -31,16 +74,26 @@ export default function Products() {
     }
   };
 
+  /**
+   * FUNÇÃO DE EXCLUSÃO COM CONFIRMAÇÃO
+   * 
+   * Implementa:
+   * - Confirmação nativa do navegador
+   * - Feedback visual durante exclusão
+   * - Recarregamento da lista após sucesso
+   * - Mensagem temporária de sucesso (3 segundos)
+   */
   const handleDelete = async (product) => {
+    // Confirmação antes de excluir
     if (!confirm(`Tem certeza que deseja excluir o produto "${product.name}"?`)) {
       return;
     }
 
     try {
-      setDeleteLoading(product.id);
+      setDeleteLoading(product.id); // Feedback visual no botão
       await productsService.deleteProduct(product.id);
       setSuccess('Produto excluído com sucesso!');
-      await loadProducts();
+      await loadProducts(); // Recarrega lista
       
       // Limpar mensagem de sucesso após 3 segundos
       setTimeout(() => setSuccess(null), 3000);

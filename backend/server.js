@@ -1,3 +1,14 @@
+/**
+ * ARQUIVO PRINCIPAL DO SERVIDOR - Backend API
+ * 
+ * Este arquivo é o ponto de entrada da aplicação backend.
+ * Aqui configuramos o Express, middlewares, rotas e conexão com banco de dados.
+ * 
+ * Arquitetura: RESTful API com autenticação JWT
+ * Stack: Node.js + Express + Sequelize + SQLite
+ */
+
+// Carrega variáveis de ambiente do arquivo .env
 require('dotenv').config();
 
 const express = require('express');
@@ -5,25 +16,43 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { sequelize } = require('./models');
 
-// Importar rotas
+// Importar rotas - separadas por domínio para melhor organização
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 
+// Inicialização do servidor Express
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middlewares de segurança
+/**
+ * MIDDLEWARES DE SEGURANÇA
+ * 
+ * Helmet: Adiciona vários headers HTTP para proteger contra vulnerabilidades comuns
+ * CORS: Controla quais origens podem acessar a API
+ */
 app.use(helmet());
 app.use(cors({
+  // Em produção, especificar domínios permitidos. Em dev, permite localhost:3000
   origin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000',
-  credentials: true
+  credentials: true // Permite envio de cookies/credenciais
 }));
 
-// Middlewares para parsing
+/**
+ * MIDDLEWARES PARA PARSING DE DADOS
+ * 
+ * express.json: Permite receber dados JSON no body das requisições
+ * express.urlencoded: Permite receber dados de formulários HTML
+ * limit: Proteção contra payloads muito grandes
+ */
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Middleware de log para desenvolvimento
+/**
+ * MIDDLEWARE DE LOGGING (apenas desenvolvimento)
+ * 
+ * Registra todas as requisições para debug
+ * Em produção, usar ferramentas como Winston ou Morgan
+ */
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
@@ -31,11 +60,22 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Rotas
+/**
+ * DEFINIÇÃO DE ROTAS
+ * 
+ * Organizadas por domínio/recurso
+ * /auth - Autenticação (login, registro)
+ * /products - CRUD de produtos
+ */
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 
-// Rota de health check
+/**
+ * ROTA DE HEALTH CHECK
+ * 
+ * Endpoint para monitoramento da saúde da aplicação
+ * Útil para ferramentas de monitoramento e load balancers
+ */
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 

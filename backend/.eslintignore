@@ -1,0 +1,9 @@
+node_modules/
+database.sqlite
+migrations/
+seeders/
+.env
+.env2
+coverage/
+dist/
+build/ 
