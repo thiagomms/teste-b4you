@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { authService } from '../services/auth';
 import Layout from '../components/Layout';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -17,8 +18,10 @@ export default function App({ Component, pageProps }) {
   }, [router.pathname]);
 
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <ThemeProvider>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </ThemeProvider>
   );
 }

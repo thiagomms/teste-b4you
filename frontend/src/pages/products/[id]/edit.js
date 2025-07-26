@@ -84,15 +84,15 @@ export default function EditProduct() {
       <div className="flex items-center space-x-4">
         <button
           onClick={() => router.push(`/products/${id}`)}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Editar Produto
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {product.name}
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function EditProduct() {
       <SuccessMessage message={success} onClose={() => setSuccess(null)} />
 
       {/* Form */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 transition-colors">
         <ProductForm
           product={product}
           onSave={handleSave}
