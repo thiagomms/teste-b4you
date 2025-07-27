@@ -81,10 +81,8 @@ export default function Login() {
       console.log('Erro de login:', error); // Debug temporário
       setError(error); // Exibe erro ao usuário
       
-      // Garante foco no campo de email para facilitar correção
-      setTimeout(() => {
-        document.getElementById('email')?.focus();
-      }, 100);
+      // Removi o setTimeout que focava no campo de email
+      // pois pode estar causando problemas visuais
     } finally {
       setLoading(false); // Remove loading independente do resultado
     }

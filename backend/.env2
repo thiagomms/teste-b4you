@@ -1,6 +1,0 @@
-NODE_ENV=development
-PORT=3001
-JWT_SECRET=b4you_secret_key_2024_super_secure
-JWT_EXPIRES_IN=1h
-DATABASE_URL=./database.sqlite
-.

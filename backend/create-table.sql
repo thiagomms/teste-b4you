@@ -1,5 +1,5 @@
 -- Seleciona o banco de dados
-USE crudb4you;
+USE testcrud;
 
 -- Remove tabela antiga se existir
 DROP TABLE IF EXISTS products;
