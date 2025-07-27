@@ -84,17 +84,40 @@ api.interceptors.response.use(
   
   // Caso de erro
   (error) => {
+    console.log('Interceptor de erro ativado:', {
+      status: error.response?.status,
+      url: error.config?.url,
+      pathname: window.location.pathname
+    });
+    
     // Se erro 401 (token expirado ou inválido)
     if (error.response?.status === 401 && isClient) {
-      // Remove token inválido
-      localStorage.removeItem('auth_token');
+      // Verifica se já está na página de login
+      const isLoginPage = window.location.pathname.includes('/login');
       
-      // Só redireciona se NÃO estiver na página de login
-      // Isso evita refresh desnecessário que faz a mensagem desaparecer
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      console.log('Erro 401 detectado. Está na página de login?', isLoginPage);
+      
+      // Se NÃO estiver na página de login
+      if (!isLoginPage) {
+        console.log('Token inválido. Aguardando antes de redirecionar...');
+        
+        // Remove token inválido
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_data');
+        
+        // Aguarda 65 segundos antes de redirecionar
+        // Isso dá tempo suficiente para ler a mensagem de erro
+        setTimeout(() => {
+          console.log('Redirecionando para login após timeout...');
+          window.location.href = '/login';
+        }, 65000); // 65 segundos = mesmo tempo do erro
+      } else {
+        console.log('Já está na página de login. Não redirecionando.');
       }
+      // Se ESTIVER na página de login, NÃO faz nada
+      // Apenas propaga o erro para ser tratado pelo formulário
     }
+    
     // Propaga erro para tratamento específico
     return Promise.reject(error);
   }

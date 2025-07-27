@@ -32,16 +32,22 @@ export default function Layout({ children }) {
    * Verifica se usuário está autenticado e redireciona se necessário
    */
   useEffect(() => {
+    // Se estiver na página de login, não faz verificações
+    if (router.pathname === '/login') {
+      setIsLoading(false);
+      return;
+    }
+
     // Verifica autenticação apenas no cliente
     const currentUser = authService.getUser();
     setUser(currentUser);
     setIsLoading(false);
 
     // Proteção de rotas: redireciona para login se não autenticado
-    if (!currentUser && router.pathname !== '/login') {
+    if (!currentUser) {
       router.push('/login');
     }
-  }, [router]);
+  }, [router.pathname]);
 
   /**
    * FUNÇÃO DE LOGOUT

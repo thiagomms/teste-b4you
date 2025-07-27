@@ -15,7 +15,13 @@ export const authService = {
       
       return response.data;
     } catch (error) {
-      throw error.response?.data || { error: 'Erro de conexão' };
+      // NÃO fazer redirect ou reload aqui
+      // Apenas propagar o erro para ser tratado pelo componente
+      console.error('Erro no login:', error);
+      
+      // Formatar erro de forma consistente
+      const errorData = error.response?.data || { error: 'Erro de conexão com o servidor' };
+      throw errorData;
     }
   },
 
